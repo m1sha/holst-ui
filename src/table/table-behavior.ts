@@ -22,29 +22,27 @@ export class TableBehavior {
     for (const control of controls) {
       if (control.columnIndex === 0) continue
       const shape = control.cellShape
-      // const style = shape.copyStyle()
-      shape
-        .on('dragover', e => {
+
+      if (this.onDragover) shape.on('dragover', e => {
           const point = { x: e.event.origin.offsetX, y: e.event.origin.offsetY }
           if (this.onDragover) this.onDragover(control, point)
-        })
-        .on('dragleave', e => {
+      })
+
+      if (this.onDragleave) shape.on('dragleave', e => {
           const point = { x: e.event.origin.offsetX, y: e.event.origin.offsetY }
           if (this.onDragleave) this.onDragleave(control, point)
-        })
-        .on('hover', e => {
+      })
+
+      if (this.onCellHover) shape.on('hover', e => {
           const point = { x: e.event.origin.offsetX, y: e.event.origin.offsetY }
           if (this.onCellHover) this.onCellHover(control, point)
-        })
-        .on('leave', e => {
+      })
+      if (this.onCellLeave) shape.on('leave', e => {
           const point = { x: e.event.origin.offsetX, y: e.event.origin.offsetY }
           if (this.onCellLeave) this.onCellLeave(control, point)
-        })
-        .on('mousemove', _ => {
-          // console.log(e)
-        })
+      })
 
-      shape.on('drop', e => {
+      if (this.onDrop) shape.on('drop', e => {
         const data = JSON.parse(e.event.origin.dataTransfer!!.getData('text/plain'))
         const point = { x: e.event.origin.offsetX, y: e.event.origin.offsetY }
         if (this.onDrop) this.onDrop(data, point, shape.bounds)
