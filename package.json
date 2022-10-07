@@ -1,8 +1,11 @@
 {
   "name": "holst-ui",
-  "private": true,
-  "version": "0.0.1",
+  "description": "UI in Canvas",
+  "version": "0.0.4",
   "type": "module",
+  "author": "m1hailostertag@gmail.com",
+  "license": "MIT",
+  "main": "index.ts",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -13,6 +16,6 @@
     "vite": "^3.0.0"
   },
   "dependencies": {
-    "holst": "^1.0.7"
+    "holst": "^1.2.2"
   }
 }
