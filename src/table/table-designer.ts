@@ -1,7 +1,6 @@
 import { Table } from './table'
 import { TableControl } from './table-control'
-import { Color, Scene, ConstraintGrid, Layer, TextBlock, Rect, Shape, Drawable } from 'holst'
-
+import { Color, ConstraintGrid, Layer, TextBlock, Rect, Shape, Drawable, Anchor } from 'holst'
 import { Cell } from './cell'
 import { Row } from './row'
 
@@ -11,20 +10,16 @@ export { CellDrawCallback, CellDrawCallbackResult }
 
 export class TableDesigner {
   table: Table
-  scene: Scene
   onCellDraw: CellDrawCallback | null = null
 
-  constructor (table: Table, scene: Scene) {
+  constructor (table: Table) {
     this.table = table
-    this.scene = scene
   }
 
-  create () {
+  create (layer: Layer) {
     if (!this.table.rows) return
     const columns = this.table.rows[0].cells.length
     const grid = new ConstraintGrid(this.table.containerRect, this.table.rows.length, columns, this.getConstraint())
-    const layer = this.scene.createLayer()
-    layer.order = this.table.order
     const controls: TableControl[] = []
     for (let rowIndex = 0; rowIndex < this.table.rows.length; rowIndex++) {
       const row = this.table.rows[rowIndex]
@@ -48,7 +43,21 @@ export class TableDesigner {
         } else {
           cellShape = layer.createShape({ stroke: cell.hidden ? Color.white : '#B1B1B1' }).rect(constraints.rect)
           cell.bounds = constraints.rect
-          if (cell.content) content.push(this.createDefaultLabel(cell, constraints.rect, layer))
+          if (Array.isArray(cell.content)) {
+            const anchor = Anchor.create(cellShape)
+            for (const item of cell.content) {
+              content.push(item)
+              if (item instanceof Shape) {
+                item.setAnchor(anchor)
+                layer.addShape(item)
+              }
+              if (item instanceof TextBlock) {
+                item.setAnchor(anchor)
+                layer.addTextBlock(item)
+              }
+            }
+          }
+          if (cell.content instanceof String || typeof cell.content === 'string' ) content.push(this.createDefaultLabel(cell, constraints.rect, layer))
         }
 
         controls.push({
