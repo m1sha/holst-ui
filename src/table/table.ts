@@ -1,11 +1,11 @@
-import { IRect, Scene } from 'holst'
+import { IRect, Layer } from 'holst'
 import { Row } from './row'
 import { CellDrawCallback, TableDesigner } from './table-designer'
 import { TableBehavior, CellDropEventCallBack, CellDragoverEventCallBack, CellDragleaveEventCallBack, CellMouseEventCallBack } from './table-behavior'
-import { IComponent } from '../component'
+import { IControl } from '../control'
 import { TableControl } from './table-control'
 
-export class Table implements IComponent {
+export class Table implements IControl {
   #controls: TableControl[] = []
   private behavior: TableBehavior | null = null
   containerRect: IRect
@@ -16,16 +16,15 @@ export class Table implements IComponent {
   onDragleave: CellDragleaveEventCallBack | null = null
   onCellHover: CellMouseEventCallBack | null = null
   onCellLeave: CellMouseEventCallBack | null = null
-  order: number = 0
 
   constructor (containerSize: IRect) {
     this.containerRect = containerSize
   }
 
-  create (scene: Scene) {
-    const designer = new TableDesigner(this, scene)
+  create (layer: Layer) {
+    const designer = new TableDesigner(this)
     if (this.onCellDraw) designer.onCellDraw = this.onCellDraw
-    this.#controls = designer.create()!!
+    this.#controls = designer.create(layer)!!
 
     this.behavior = new TableBehavior(this.#controls)
     this.behavior.onDrop = this.onDrop
